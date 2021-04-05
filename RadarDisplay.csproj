@@ -65,9 +65,11 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="ImageProcess.cs" />
     <Compile Include="NavigationMenuItemExt.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="OpenTiff.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
