@@ -11,6 +11,7 @@ using HZH_Controls;
 using System.Threading;
 using BitMiracle.LibTiff.Classic;
 using HZH_Controls.Forms;
+
 namespace RadarDisplay
 {
     delegate void SetValueCallback(int value);
@@ -23,6 +24,11 @@ namespace RadarDisplay
         }
         OpenTiff Open = new OpenTiff();
         int i = 0;
+
+        /// <summary>
+        /// 子线程控制进度条
+        /// </summary>
+        /// <param name="value"></param>
         public void SetProcessBarValue(int value)
         {
             // InvokeRequired required compares the thread ID of the
@@ -40,6 +46,204 @@ namespace RadarDisplay
             }
         }
 
+
+        #region 所有按钮操作函数
+        /// <summary>
+        /// 读取图片，子线程函数
+        /// </summary>
+        private void newThread()
+        {
+            Open.ReadAllTif(this);
+            Open.DisplayTif(this);
+            Open.ReadImg = true;
+        }
+
+       /// <summary>
+       /// 打开文件
+       /// </summary>
+        private  void OpenFile()
+        {
+            this.ucTrackBar1.Value = 1;
+            OpenFileDialog open = new OpenFileDialog();
+            open.Filter = "*.tif文件|*.tif|所有文件|*.*";
+            open.Multiselect = true;//等于true表示可以选择多个文件
+
+            if (open.ShowDialog() != DialogResult.OK)
+            {
+
+                return;
+            }
+            if (open.FileNames == null)
+            {
+                return;
+            }
+
+            //选择区域
+            this.ucBtnExt3.Enabled = true;
+            this.ucBtnExt4.Enabled = false;
+            this.ucBtnExt9.Enabled = true;
+
+            //图像处理
+            this.ucBtnExt5.Enabled = true;
+            this.ucBtnExt6.Enabled = true;
+            this.ucBtnExt7.Enabled = true;
+
+
+            Open.FilePaths = open.FileNames;
+            Open.num = Open.FilePaths.GetLength(0);
+            this.ucTrackBar1.MaxValue = Open.num;
+            //string pathsource = open.FileName;
+            //FilePath.Path = pathsource;
+
+            //Open.ReadTif();
+
+
+            this.ucProcessLineExt1.MaxValue = Open.num;
+
+            this.ucProcessLineExt1.Value = 0;
+
+            //this.label4.Text = "正在读取图片......";
+            Thread thread = new Thread(new ThreadStart(newThread));
+            thread.IsBackground = true;
+            thread.Start();
+        }
+
+        /// <summary>
+        /// 打开文件夹
+        /// </summary>
+        private void OpenFolder()
+        {
+            FrmDialog.ShowDialog(this, "这是一个没有取消按钮的提示框", "模式窗体测试");
+        }
+
+        /// <summary>
+        /// 绘制矩形
+        /// </summary>
+        private void DrawRec()
+        {
+            if (!ucBtnExt3.Enabled)
+            {
+                FrmDialog.ShowDialog(this, "尚未读取文件");
+                return;
+            }
+
+            this.ucBtnExt4.Enabled = true;
+
+            FrmDialog.ShowDialog(this, "拖动鼠标绘制矩形框，选择裁剪范围。");
+            Open.LonSec = false;
+
+            pictureBox1.Refresh();
+            Open.RecEnd = new Point(-1, -1);
+            Open.RecStart = new Point(-1, -1);
+            Open.RecPaint = true;
+
+            //Open.ReadAllOffTif(this);
+            Open.DisplayTif(this);
+        }
+
+        /// <summary>
+        /// 剪裁
+        /// </summary>
+        private void CutTiff()
+        {
+            if (!ucBtnExt4.Enabled)
+            {
+                FrmDialog.ShowDialog(this, "尚未读取文件");
+                return;
+            }
+
+            if (Open.ReadImg == false)
+            {
+                FrmDialog.ShowDialog(this, "图片正在读取，请稍后进行该操作。");
+                return;
+            }
+            this.ucProcessLineExt1.Value = 0;
+            Open.RecPaint = false;
+            if (Open.RecStart.X >= 0 && Open.RecEnd.X >= 0)
+            {
+                Open.ReadAllOffTif(this);
+                Open.DisplayTif(this);
+            }
+            this.ucBtnExt4.Enabled = false;
+        }
+
+        /// <summary>
+        /// 纵切面
+        /// </summary>
+        private void LongitudinalSection()
+        {
+            if (!ucBtnExt9.Enabled)
+            {
+                FrmDialog.ShowDialog(this, "尚未读取文件");
+                return;
+            }
+
+            if (Open.ReadImg == false)
+            {
+                FrmDialog.ShowDialog(this, "图片正在读取，请稍后进行该操作。");
+                return;
+            }
+            this.ucBtnExt4.Enabled = false;
+            Open.RecPaint = false;
+            pictureBox1.Refresh();
+            Open.LonSec = true;
+            FrmDialog.ShowDialog(this, "点击确定两点，确定绘制纵切面的区域。");
+            
+        }
+
+        /// <summary>
+        /// 图像增强
+        /// </summary>
+        private void ImageIntensifier()
+        {
+            if (!ucBtnExt5.Enabled)
+            {
+                FrmDialog.ShowDialog(this, "尚未读取文件");
+                return;
+            }
+        }
+
+        /// <summary>
+        /// 图像去噪
+        /// </summary>
+        private void ImageDenoising()
+        {
+            if (!ucBtnExt6.Enabled)
+            {
+                FrmDialog.ShowDialog(this, "尚未读取文件");
+                return;
+            }
+        }
+
+        /// <summary>
+        /// 分析地物
+        /// </summary>
+        private void Analysis()
+        {
+            if (!ucBtnExt7.Enabled)
+            {
+                FrmDialog.ShowDialog(this, "尚未读取文件");
+                return;
+            }
+
+            ImageProcess ImgPro = new ImageProcess();
+            if (Open.ReadImg == false)
+            {
+                FrmDialog.ShowDialog(this, "图片正在读取，请稍后进行该操作。");
+                return;
+            }
+            //button6.Enabled = true;
+            ImgPro.GetImg(this, Open);
+            Open.DisplayTif(this);
+        }
+        #endregion
+
+
+        /// <summary>
+        /// Form加载
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Form1_Load(object sender, EventArgs e)
         {
             //skinEngine1.SkinFile = "C:\\Users\\zyb71\\Desktop\\WinFormSkin\\WinFormSkin\\bin\\Debug\\Skins\\SportsBlue.ssk";
@@ -92,13 +296,12 @@ namespace RadarDisplay
         {
 
         }
-        private void newThread()
-        {
-            Open.ReadAllTif(this);
-            Open.DisplayTif(this);
-            Open.ReadImg = true;
-            
-        }
+
+        /// <summary>
+        /// 左侧按钮点击
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tvMenu_AfterSelect(object sender, TreeViewEventArgs e)
         {
             string strName = e.Node.Text.Trim();
@@ -108,118 +311,40 @@ namespace RadarDisplay
 
                 #region   文件按钮
                 case "打开文件":
-
-                    //this.ucBtnExt3.Enabled = true;
-                    //this.ucBtnExt4.Enabled = true;
-                    //this.button4.Enabled = true;
-                    //this.button5.Enabled = false;
-                    this.ucTrackBar1.Value = 1;
-                    OpenFileDialog open = new OpenFileDialog();
-                    open.Filter = "*.tif文件|*.tif|所有文件|*.*";
-                    open.Multiselect = true;//等于true表示可以选择多个文件
-
-                    if (open.ShowDialog() != DialogResult.OK)
-                    {
-                        return;
-                    }
-                    if (open.FileNames == null)
-                    {
-                        return;
-                    }
-                    Open.FilePaths = open.FileNames;
-                    Open.num = Open.FilePaths.GetLength(0);
-                    this.ucTrackBar1.MaxValue = Open.num;
-                    //string pathsource = open.FileName;
-                    //FilePath.Path = pathsource;
-
-                    //Open.ReadTif();
-
-
-                    this.ucProcessLineExt1.MaxValue = Open.num;
-
-                    this.ucProcessLineExt1.Value = 0;
-
-                    //this.label4.Text = "正在读取图片......";
-                    Thread thread = new Thread(new ThreadStart(newThread));
-                    thread.IsBackground = true;
-                    thread.Start();
-
+                    OpenFile();
                     break;
+
                 case "打开文件夹":
-                    FrmDialog.ShowDialog(this, "这是一个没有取消按钮的提示框", "模式窗体测试");
+                    OpenFolder();
                     break;
-                #endregion
-
+                    #endregion
 
                 #region 区域按钮
-
                 case "绘制矩形":
-                    //this.button5.Enabled = true;
-
-                    FrmDialog.ShowDialog(this,"拖动鼠标绘制矩形框，选择裁剪范围。");
-                    Open.LonSec = false;
-
-                    pictureBox1.Refresh();
-                    Open.RecEnd = new Point(-1, -1);
-                    Open.RecStart = new Point(-1, -1);
-                    Open.RecPaint = true;
-
-                    //Open.ReadAllOffTif(this);
-                    Open.DisplayTif(this);
-
+                    DrawRec();
                     break;
 
                 case "剪裁":
-                    if (Open.ReadImg == false)
-                    {
-                        FrmDialog.ShowDialog(this,"图片正在读取，请稍后进行该操作。");
-                        return;
-                    }
-                    this.ucProcessLineExt1.Value = 0;
-                    Open.RecPaint = false;
-                    if (Open.RecStart.X >= 0 && Open.RecEnd.X >= 0)
-                    {
-                        Open.ReadAllOffTif(this);
-                        Open.DisplayTif(this);
-                    }
-                    //this.button5.Enabled = false;
-
+                    CutTiff();
                     break;
 
                 case "纵切面":
-                    if (Open.ReadImg == false)
-                    {
-                        FrmDialog.ShowDialog(this,"图片正在读取，请稍后进行该操作。");
-                        return;
-                    }
-                    //this.button5.Enabled = false;
-                    Open.RecPaint = false;
-                    pictureBox1.Refresh();
-                    Open.LonSec = true;
-                    FrmDialog.ShowDialog(this,"点击确定两点，确定绘制纵切面的区域。");
+                    LongitudinalSection();
                     break;
                 #endregion
 
 
                 #region 图像处理按钮
                 case "图像增强":
-                    MessageBox.Show("Hello");
+                    ImageIntensifier();
                     break;
 
                 case "图像去噪":
-                    MessageBox.Show("Hello");
+                    ImageDenoising();
                     break;
 
                 case "分析地物":
-                    ImageProcess ImgPro = new ImageProcess();
-                    if (Open.ReadImg == false)
-                    {
-                        FrmDialog.ShowDialog(this,"图片正在读取，请稍后进行该操作。");
-                        return;
-                    }
-                    //button6.Enabled = true;
-                    ImgPro.GetImg(this, Open);
-                    Open.DisplayTif(this);
+                    Analysis();
                     break;
 
                 #endregion
@@ -239,14 +364,6 @@ namespace RadarDisplay
 
         private void ucBtnExt2_BtnClick(object sender, EventArgs e)
         {
-            //ControlHelper.ThreadRunExt(this, () =>
-            //{
-            //    Thread.Sleep(5000);
-            //    //ControlHelper.ThreadInvokerControl(this, () =>
-            //    //{
-            //    //    HZH_Controls.Forms.FrmTips.ShowTipsSuccess(this, "FrmWaiting测试");
-            //    //});
-            //}, null, this);
 
         }
 
@@ -333,6 +450,8 @@ namespace RadarDisplay
 
             }
         }
+
+
         Pen mypen = new Pen(Color.Red, 3);//设置画笔属性
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
@@ -420,7 +539,7 @@ namespace RadarDisplay
 
         private void tvMenu_AfterExpand(object sender, TreeViewEventArgs e)
         {
-
+            
         }
     }
 }

@@ -147,7 +147,7 @@
             this.groupBox3.Controls.Add(this.ucBtnExt6);
             this.groupBox3.Controls.Add(this.ucBtnExt5);
             this.groupBox3.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.groupBox3.Location = new System.Drawing.Point(714, 496);
+            this.groupBox3.Location = new System.Drawing.Point(718, 496);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(261, 279);
             this.groupBox3.TabIndex = 4;
@@ -163,6 +163,7 @@
             this.ucBtnExt7.BtnText = null;
             this.ucBtnExt7.ConerRadius = 10;
             this.ucBtnExt7.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.ucBtnExt7.Enabled = false;
             this.ucBtnExt7.EnabledMouseEffect = false;
             this.ucBtnExt7.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(77)))), ((int)(((byte)(59)))));
             this.ucBtnExt7.Font = new System.Drawing.Font("微软雅黑", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
@@ -189,6 +190,7 @@
             this.ucBtnExt6.BtnText = null;
             this.ucBtnExt6.ConerRadius = 10;
             this.ucBtnExt6.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.ucBtnExt6.Enabled = false;
             this.ucBtnExt6.EnabledMouseEffect = false;
             this.ucBtnExt6.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(77)))), ((int)(((byte)(59)))));
             this.ucBtnExt6.Font = new System.Drawing.Font("微软雅黑", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
@@ -215,6 +217,7 @@
             this.ucBtnExt5.BtnText = null;
             this.ucBtnExt5.ConerRadius = 10;
             this.ucBtnExt5.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.ucBtnExt5.Enabled = false;
             this.ucBtnExt5.EnabledMouseEffect = false;
             this.ucBtnExt5.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(77)))), ((int)(((byte)(59)))));
             this.ucBtnExt5.Font = new System.Drawing.Font("微软雅黑", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
@@ -239,7 +242,7 @@
             this.groupBox2.Controls.Add(this.ucBtnExt4);
             this.groupBox2.Controls.Add(this.ucBtnExt3);
             this.groupBox2.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.groupBox2.Location = new System.Drawing.Point(714, 213);
+            this.groupBox2.Location = new System.Drawing.Point(718, 213);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(261, 268);
             this.groupBox2.TabIndex = 3;
@@ -255,6 +258,7 @@
             this.ucBtnExt9.BtnText = null;
             this.ucBtnExt9.ConerRadius = 10;
             this.ucBtnExt9.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.ucBtnExt9.Enabled = false;
             this.ucBtnExt9.EnabledMouseEffect = false;
             this.ucBtnExt9.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(77)))), ((int)(((byte)(59)))));
             this.ucBtnExt9.Font = new System.Drawing.Font("微软雅黑", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
@@ -308,6 +312,7 @@
             this.ucBtnExt3.BtnText = null;
             this.ucBtnExt3.ConerRadius = 10;
             this.ucBtnExt3.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.ucBtnExt3.Enabled = false;
             this.ucBtnExt3.EnabledMouseEffect = false;
             this.ucBtnExt3.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(77)))), ((int)(((byte)(59)))));
             this.ucBtnExt3.Font = new System.Drawing.Font("微软雅黑", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
@@ -333,7 +338,7 @@
             this.groupBox1.Controls.Add(this.ucBtnExt1);
             this.groupBox1.Cursor = System.Windows.Forms.Cursors.Default;
             this.groupBox1.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.groupBox1.Location = new System.Drawing.Point(714, 12);
+            this.groupBox1.Location = new System.Drawing.Point(718, 12);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(261, 195);
             this.groupBox1.TabIndex = 2;
