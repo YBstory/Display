@@ -12,7 +12,11 @@ namespace RadarDisplay
 
 
         #region 图像处理部分
-        //计算阈值
+/// <summary>
+/// 计算阈值
+/// </summary>
+/// <param name="form"></param>
+/// <returns></returns>
         private int CalculateImg(Form1 form)
         {
             Bitmap image;
@@ -98,9 +102,11 @@ namespace RadarDisplay
             int width = Open.bufferMapGroup[0].Width;
             int height = Open.bufferMapGroup[0].Height;
 
+            form.ucProcessLineExt1.Value = 0;
             for (int i = 0; i < Open.num; i++)
             {
                 ImgProcess(width, height, mid, i, Open);
+                form.ucProcessLineExt1.Value = i + 1;
                 //form.pictureBox2.Image = Open.bufferMapGroup[i];//
                 //form.Refresh();//
             }

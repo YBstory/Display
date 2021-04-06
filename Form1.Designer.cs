@@ -180,6 +180,7 @@
             this.ucBtnExt7.TabStop = false;
             this.ucBtnExt7.TipsColor = System.Drawing.Color.FromArgb(((int)(((byte)(232)))), ((int)(((byte)(30)))), ((int)(((byte)(99)))));
             this.ucBtnExt7.TipsText = "";
+            this.ucBtnExt7.BtnClick += new System.EventHandler(this.ucBtnExt7_BtnClick);
             // 
             // ucBtnExt6
             // 
@@ -207,6 +208,7 @@
             this.ucBtnExt6.TabStop = false;
             this.ucBtnExt6.TipsColor = System.Drawing.Color.FromArgb(((int)(((byte)(232)))), ((int)(((byte)(30)))), ((int)(((byte)(99)))));
             this.ucBtnExt6.TipsText = "";
+            this.ucBtnExt6.BtnClick += new System.EventHandler(this.ucBtnExt6_BtnClick);
             // 
             // ucBtnExt5
             // 
@@ -234,6 +236,7 @@
             this.ucBtnExt5.TabStop = false;
             this.ucBtnExt5.TipsColor = System.Drawing.Color.FromArgb(((int)(((byte)(232)))), ((int)(((byte)(30)))), ((int)(((byte)(99)))));
             this.ucBtnExt5.TipsText = "";
+            this.ucBtnExt5.BtnClick += new System.EventHandler(this.ucBtnExt5_BtnClick);
             // 
             // groupBox2
             // 
@@ -275,6 +278,7 @@
             this.ucBtnExt9.TabStop = false;
             this.ucBtnExt9.TipsColor = System.Drawing.Color.FromArgb(((int)(((byte)(232)))), ((int)(((byte)(30)))), ((int)(((byte)(99)))));
             this.ucBtnExt9.TipsText = "";
+            this.ucBtnExt9.BtnClick += new System.EventHandler(this.ucBtnExt9_BtnClick);
             // 
             // ucBtnExt4
             // 
@@ -302,6 +306,7 @@
             this.ucBtnExt4.TabStop = false;
             this.ucBtnExt4.TipsColor = System.Drawing.Color.FromArgb(((int)(((byte)(232)))), ((int)(((byte)(30)))), ((int)(((byte)(99)))));
             this.ucBtnExt4.TipsText = "";
+            this.ucBtnExt4.BtnClick += new System.EventHandler(this.ucBtnExt4_BtnClick);
             // 
             // ucBtnExt3
             // 

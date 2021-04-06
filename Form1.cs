@@ -11,6 +11,7 @@ using HZH_Controls;
 using System.Threading;
 using BitMiracle.LibTiff.Classic;
 using HZH_Controls.Forms;
+using System.IO;
 
 namespace RadarDisplay
 {
@@ -92,14 +93,7 @@ namespace RadarDisplay
             Open.FilePaths = open.FileNames;
             Open.num = Open.FilePaths.GetLength(0);
             this.ucTrackBar1.MaxValue = Open.num;
-            //string pathsource = open.FileName;
-            //FilePath.Path = pathsource;
-
-            //Open.ReadTif();
-
-
             this.ucProcessLineExt1.MaxValue = Open.num;
-
             this.ucProcessLineExt1.Value = 0;
 
             //this.label4.Text = "正在读取图片......";
@@ -113,7 +107,52 @@ namespace RadarDisplay
         /// </summary>
         private void OpenFolder()
         {
-            FrmDialog.ShowDialog(this, "这是一个没有取消按钮的提示框", "模式窗体测试");
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
+            dialog.Description = "请选择Tiff影像所在文件夹";
+
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if (string.IsNullOrEmpty(dialog.SelectedPath))
+                {
+                    MessageBox.Show(this, "文件夹路径不能为空", "提示");
+                    return;
+                }
+            }
+
+            string RootPath = dialog.SelectedPath;
+            DirectoryInfo TheFolder = new DirectoryInfo(RootPath);
+            int num = TheFolder.GetFiles().Length;
+
+            Open.FilePaths = new string[num];
+            int j = 0;
+            foreach (FileInfo NextFile in TheFolder.GetFiles())
+            {
+                string FilePath = RootPath + "\\" + NextFile.Name;
+                Open.FilePaths[j] = FilePath;
+                j++;
+            }
+
+            //选择区域
+            this.ucBtnExt3.Enabled = true;
+            this.ucBtnExt4.Enabled = false;
+            this.ucBtnExt9.Enabled = true;
+
+            //图像处理
+            this.ucBtnExt5.Enabled = true;
+            this.ucBtnExt6.Enabled = true;
+            this.ucBtnExt7.Enabled = true;
+
+
+            Open.num = num;
+            this.ucTrackBar1.MaxValue = num;
+            this.ucTrackBar1.Value = 1;
+            this.ucProcessLineExt1.MaxValue = num;
+            this.ucProcessLineExt1.Value = 0;
+
+            Thread thread = new Thread(new ThreadStart(newThread));
+            thread.IsBackground = true;
+            thread.Start();
+
         }
 
         /// <summary>
@@ -165,6 +204,8 @@ namespace RadarDisplay
                 Open.DisplayTif(this);
             }
             this.ucBtnExt4.Enabled = false;
+
+            pictureBox2.Image = null;
         }
 
         /// <summary>
@@ -235,6 +276,7 @@ namespace RadarDisplay
             //button6.Enabled = true;
             ImgPro.GetImg(this, Open);
             Open.DisplayTif(this);
+            pictureBox2.Image = null;
         }
         #endregion
 
@@ -357,20 +399,7 @@ namespace RadarDisplay
             
         }
 
-        private void ucBtnExt1_BtnClick(object sender, EventArgs e)
-        {
 
-        }
-
-        private void ucBtnExt2_BtnClick(object sender, EventArgs e)
-        {
-
-        }
-
-        private void ucBtnExt3_BtnClick(object sender, EventArgs e)
-        {
-
-        }
 
         private void ucTrackBar1_ValueChanged(object sender, EventArgs e)
         {
@@ -541,5 +570,49 @@ namespace RadarDisplay
         {
             
         }
+
+        #region 界面按钮点击
+
+        private void ucBtnExt1_BtnClick(object sender, EventArgs e)
+        {
+            OpenFile();
+        }
+
+        private void ucBtnExt2_BtnClick(object sender, EventArgs e)
+        {
+            OpenFolder();
+        }
+
+        private void ucBtnExt3_BtnClick(object sender, EventArgs e)
+        {
+            DrawRec();
+        }
+
+        private void ucBtnExt4_BtnClick(object sender, EventArgs e)
+        {
+            CutTiff();
+        }
+
+        private void ucBtnExt9_BtnClick(object sender, EventArgs e)
+        {
+            LongitudinalSection();
+        }
+
+        private void ucBtnExt5_BtnClick(object sender, EventArgs e)
+        {
+            ImageIntensifier();
+        }
+
+        private void ucBtnExt6_BtnClick(object sender, EventArgs e)
+        {
+            ImageDenoising();
+        }
+
+        private void ucBtnExt7_BtnClick(object sender, EventArgs e)
+        {
+            Analysis();
+        }
+        #endregion
+
     }
 }

@@ -49,10 +49,10 @@ namespace RadarDisplay
 
         public int ID = 0;
 
-        private int IMin = 10000;
-        private int IMax = -1;
-        private int JMin = 10000;
-        private int JMax = -1;
+        //private int IMin = 10000;
+        //private int IMax = -1;
+        //private int JMin = 10000;
+        //private int JMax = -1;
 
         public Point start = new Point(-1, -1);
         public Point end;
