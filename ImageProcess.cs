@@ -14,11 +14,72 @@ namespace RadarDisplay
         #region 分析地物部分
 
         int ImgID = 0;
-/// <summary>
-/// 计算阈值
-/// </summary>
-/// <param name="form"></param>
-/// <returns></returns>
+
+        #region 取五张图
+        /// <summary>
+        /// 取样本图片
+        /// </summary>
+        /// <param name="Open"></param>
+        /// <returns></returns>
+        private int[] Raster(OpenTiff Open)
+        {
+            int width = Open.TifMapGroup[0].Width;
+            int height = Open.TifMapGroup[0].Height;
+            int num = Open.num;
+            int interval = 1;
+            if (num < 5)
+            {
+                num = Open.num;
+            }
+            else
+            {
+                interval = num / 5;
+                num = 5;
+            }
+
+            int[] buffer = new int[width * height * num];
+            int deep = 0;
+            for(int k = 0; k < num; k++)
+            {
+                Bitmap image = Open.TifMapGroup[deep];
+                for (int i = 0; i < width; i++)
+                {
+                    for(int j = 0; j < height; j++)
+                    {
+
+                        Int32 imgArgb = image.GetPixel(i, j).ToArgb();
+                        int value = 0xFF0000 & imgArgb;
+                        value >>= 16;
+
+                        buffer[width * height * k + i * height + j] = value;
+                    }
+                
+                }
+                deep = deep + interval;
+            }
+
+            return buffer;
+        }
+        #endregion
+
+        /// <summary>
+        /// 根据选区的样本计算阈值
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
+        private int CalculateImg(int[] buffer)
+        {
+            int length = buffer.Length;
+            Array.Sort(buffer);
+            length = length / 2;
+            return buffer[length];
+        }
+
+        /// <summary>
+        /// 计算单图阈值，选取显示的左图
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
         private int CalculateImg(Form1 form)
         {
             Bitmap image;
@@ -94,9 +155,13 @@ namespace RadarDisplay
                 }
             }
 
-            //form.pictureBox2.Image = image;
         }
 
+       /// <summary>
+       /// 地物分析
+       /// </summary>
+       /// <param name="form"></param>
+       /// <param name="Open"></param>
         public void GetImg(Form1 form, OpenTiff Open)
         {
             ImgID = 0;
@@ -113,7 +178,8 @@ namespace RadarDisplay
 
             Open.TifMapGroup.CopyTo(Open.bufferMapGroup, 0);
 
-            int mid = CalculateImg(form);
+            int[] raster = Raster(Open);
+            int mid = CalculateImg(raster);
 
             int width = Open.bufferMapGroup[0].Width;
             int height = Open.bufferMapGroup[0].Height;
@@ -392,9 +458,6 @@ namespace RadarDisplay
         }
         #endregion
 
-
-
-
         #region 直方图均衡化部分
 
         int[] gray = new int[256]; //记录每个灰度级别下的像素个数
@@ -489,6 +552,42 @@ namespace RadarDisplay
             for(int i = 0; i < num; i++)
             {
                 Replace(Open.TifMapGroup[i]);
+            }
+        }
+        #endregion
+
+
+        #region 转换为灰色影像
+        private void Convert2Gray(Bitmap image)
+        {
+            int width = image.Width;
+            int height = image.Height;
+
+            int[] raster = new int[width * height];
+
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    Int32 imgArgb = image.GetPixel(i, j).ToArgb();
+                    raster[i * height + j] = 0xFF0000 & imgArgb;
+                    raster[i * height + j] >>= 16;
+
+                    image.SetPixel(i, j, Color.FromArgb(raster[i * height + j], raster[i * height + j], raster[i * height + j]));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 转换为灰度影像
+        /// </summary>
+        public void Convert2GrayStack(Form1 form, OpenTiff Open)
+        {
+            form.ucProcessLineExt1.Value = 0;
+            for (int i = 0; i < Open.num; i++)
+            {
+                Convert2Gray(Open.TifMapGroup[i]);
+                form.ucProcessLineExt1.Value = i + 1;
             }
         }
         #endregion

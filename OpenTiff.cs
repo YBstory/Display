@@ -38,21 +38,9 @@ namespace RadarDisplay
         public Bitmap[] bufferMapGroup;//作为暂存的图像
 
         public bool ReadImg = false;
-        //private DataSet ds;
-        //private DataTable table;
-        //private DataRow dataRow;
-        //private DataColumn column1;
-        //private DataColumn column2;
-        //private DataColumn column3;
-        //private DataColumn column4;
-        //private DataColumn column5;
 
         public int ID = 0;
 
-        //private int IMin = 10000;
-        //private int IMax = -1;
-        //private int JMin = 10000;
-        //private int JMax = -1;
 
         public Point start = new Point(-1, -1);
         public Point end;
@@ -302,6 +290,7 @@ namespace RadarDisplay
             return p;
         }
         #endregion
+
         #region 创建纵截面图片
         public void NewLonTiff(Form1 form)
         {
@@ -487,6 +476,20 @@ namespace RadarDisplay
             return clonedObj;
         }
 
+        #endregion
+
+        #region 保存图片堆
+        public void SaveStack(string SavePath)
+        {
+            System.Drawing.Imaging.ImageFormat imgformat = System.Drawing.Imaging.ImageFormat.Tiff;
+
+            for(int i = 0; i < num; i++)
+            {
+                string buffer = i.ToString();
+                string path = SavePath + "\\Save" + buffer + ".tif";
+                TifMapGroup[i].Save(path, imgformat);
+            }
+        }
         #endregion
     }
 

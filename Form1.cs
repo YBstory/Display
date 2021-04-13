@@ -118,6 +118,10 @@ namespace RadarDisplay
                     return;
                 }
             }
+            else
+            {
+                return;
+            }
 
             string RootPath = dialog.SelectedPath;
             DirectoryInfo TheFolder = new DirectoryInfo(RootPath);
@@ -153,6 +157,29 @@ namespace RadarDisplay
             thread.IsBackground = true;
             thread.Start();
 
+        }
+
+        /// <summary>
+        /// 保存图片堆
+        /// </summary>
+        private void SaveTiffStack()
+        {
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
+            dialog.Description = "保存位置";
+
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if (string.IsNullOrEmpty(dialog.SelectedPath))
+                {
+                    MessageBox.Show(this, "文件夹路径不能为空", "提示");
+                    return;
+                }
+            }
+
+            string RootPath = dialog.SelectedPath;
+
+            Open.SaveStack(RootPath);
+            FrmDialog.ShowDialog(this, "图片保存成功！");
         }
 
         /// <summary>
@@ -350,6 +377,22 @@ namespace RadarDisplay
             Open.DisplayTif(this);
             pictureBox2.Image = null;
         }
+
+        /// <summary>
+        /// 转换为灰度影像
+        /// </summary>
+        private void Convert2G()
+        {
+            ImageProcess ImgPro = new ImageProcess();
+            if (Open.ReadImg == false)
+            {
+                FrmDialog.ShowDialog(this, "图片正在读取，请稍后进行该操作。");
+                return;
+            }
+            //button6.Enabled = true;
+            ImgPro.Convert2GrayStack(this, Open);
+            Open.DisplayTif(this);
+        }
         #endregion
 
 
@@ -366,6 +409,7 @@ namespace RadarDisplay
             TreeNode tnForm = new TreeNode("  文件");
             tnForm.Nodes.Add("打开文件");
             tnForm.Nodes.Add("打开文件夹");
+            tnForm.Nodes.Add("保存图片堆");
 
             this.tvMenu.Nodes.Add(tnForm);
 
@@ -385,6 +429,7 @@ namespace RadarDisplay
             tnControl2.Nodes.Add("二维中值滤波");
             tnControl2.Nodes.Add("三维均值滤波");
             tnControl2.Nodes.Add("三维中值滤波");
+            tnControl2.Nodes.Add("转换为灰色影像");
             //tnControl2.Nodes.Add("保存图片");
 
             this.tvMenu.Nodes.Add(tnControl2);
@@ -436,6 +481,11 @@ namespace RadarDisplay
                 case "打开文件夹":
                     OpenFolder();
                     break;
+
+                case "保存图片堆":
+                    SaveTiffStack();
+                    break;
+
                 #endregion
 
                 #region 区域按钮
@@ -482,6 +532,9 @@ namespace RadarDisplay
                     MedianFilter_3D();
                     break;
 
+                case "转换为灰色影像":
+                    Convert2G();
+                    break;
                     #endregion
             }
         }
