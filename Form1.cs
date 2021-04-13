@@ -242,6 +242,10 @@ namespace RadarDisplay
                 FrmDialog.ShowDialog(this, "尚未读取文件");
                 return;
             }
+
+            ImageProcess ImgPro = new ImageProcess();
+            ImgPro.histogram(Open);
+            Open.DisplayTif(this);
         }
 
         /// <summary>
@@ -254,6 +258,74 @@ namespace RadarDisplay
                 FrmDialog.ShowDialog(this, "尚未读取文件");
                 return;
             }
+            ImageProcess ImgPro = new ImageProcess();
+
+            ImgPro.MeanFilterStack(this, Open);
+            Open.DisplayTif(this);
+        }
+
+        /// <summary>
+        /// 二维均值滤波
+        /// </summary>
+        private void MeanFilter_2D()
+        {
+            if (!ucBtnExt6.Enabled)
+            {
+                FrmDialog.ShowDialog(this, "尚未读取文件");
+                return;
+            }
+            ImageProcess ImgPro = new ImageProcess();
+
+            ImgPro.MeanFilterStack(this, Open);
+            Open.DisplayTif(this);
+        }
+
+        /// <summary>
+        /// 三维均值滤波
+        /// </summary>
+        private void MeanFilter_3D()
+        {
+            if (!ucBtnExt6.Enabled)
+            {
+                FrmDialog.ShowDialog(this, "尚未读取文件");
+                return;
+            }
+            ImageProcess ImgPro = new ImageProcess();
+
+            ImgPro.MeanFilter3D(this, Open);
+            Open.DisplayTif(this);
+        }
+
+        /// <summary>
+        /// 二维中值滤波
+        /// </summary>
+        private void MedianFilter_2D()
+        {
+            if (!ucBtnExt6.Enabled)
+            {
+                FrmDialog.ShowDialog(this, "尚未读取文件");
+                return;
+            }
+            ImageProcess ImgPro = new ImageProcess();
+
+            ImgPro.MedianFilterStack(this, Open);
+            Open.DisplayTif(this);
+        }
+
+        /// <summary>
+        /// 三维中值滤波
+        /// </summary>
+        private void MedianFilter_3D()
+        {
+            if (!ucBtnExt6.Enabled)
+            {
+                FrmDialog.ShowDialog(this, "尚未读取文件");
+                return;
+            }
+            ImageProcess ImgPro = new ImageProcess();
+
+            ImgPro.MedianFilter3D(this, Open);
+            Open.DisplayTif(this);
         }
 
         /// <summary>
@@ -309,6 +381,10 @@ namespace RadarDisplay
             tnControl2.Nodes.Add("图像增强");
             tnControl2.Nodes.Add("图像去噪");
             tnControl2.Nodes.Add("分析地物");
+            tnControl2.Nodes.Add("二维均值滤波");
+            tnControl2.Nodes.Add("二维中值滤波");
+            tnControl2.Nodes.Add("三维均值滤波");
+            tnControl2.Nodes.Add("三维中值滤波");
             //tnControl2.Nodes.Add("保存图片");
 
             this.tvMenu.Nodes.Add(tnControl2);
@@ -344,10 +420,11 @@ namespace RadarDisplay
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void tvMenu_AfterSelect(object sender, TreeViewEventArgs e)
+        /// 
+        private void tvMenu_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             string strName = e.Node.Text.Trim();
-            
+
             switch (strName)
             {
 
@@ -359,7 +436,7 @@ namespace RadarDisplay
                 case "打开文件夹":
                     OpenFolder();
                     break;
-                    #endregion
+                #endregion
 
                 #region 区域按钮
                 case "绘制矩形":
@@ -389,9 +466,29 @@ namespace RadarDisplay
                     Analysis();
                     break;
 
-                #endregion
-            }
+                case "二维均值滤波":
+                    MeanFilter_2D();
+                    break;
 
+                case "二维中值滤波":
+                    MedianFilter_2D();
+                    break;
+
+                case "三维均值滤波":
+                    MeanFilter_3D();
+                    break;
+
+                case "三维中值滤波":
+                    MedianFilter_3D();
+                    break;
+
+                    #endregion
+            }
+        }
+
+
+        private void tvMenu_AfterSelect(object sender, TreeViewEventArgs e)
+        {
         }
 
         private void ucBtnExt1_Click(object sender, EventArgs e)
@@ -613,6 +710,7 @@ namespace RadarDisplay
             Analysis();
         }
         #endregion
+
 
     }
 }
