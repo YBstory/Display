@@ -130,7 +130,7 @@ namespace RadarDisplay
                 for (int j = 0; j < height; j++)
                 {
                     int pixvalue = raster[i * height + j];
-                    if (pixvalue > (mid + 60))
+                    if (pixvalue > (mid + 30))
                     {
                         //获得字节数组
                         string buffer = i.ToString() + "," + j.ToString() + "," + ImgID.ToString() + "\n";
@@ -139,8 +139,11 @@ namespace RadarDisplay
                         fs1.Write(data, 0, data.Length);
 
                         image.SetPixel(i, j, Color.FromArgb(255, 255, 0));
+
+
+
                     }
-                    else if (pixvalue < (mid - 60))
+                    else if (pixvalue < (mid - 30))
                     {
 
                         //获得字节数组
@@ -152,6 +155,10 @@ namespace RadarDisplay
 
                         image.SetPixel(i, j, Color.FromArgb(0, 255, 255));
                     }
+                    //if (pixvalue < 10)
+                    //{
+                    //    image.SetPixel(i, j, Color.FromArgb(255, 255, 0));
+                    //}
                 }
             }
 
@@ -552,6 +559,59 @@ namespace RadarDisplay
             for(int i = 0; i < num; i++)
             {
                 Replace(Open.TifMapGroup[i]);
+            }
+        }
+        #endregion
+
+
+        #region 灰度拉伸部分
+        public void gray_expand(Form1 form,OpenTiff Open)
+        {
+            int[] raster = Raster(Open);
+            Array.Sort(raster);
+            double min = (double)raster[0];
+            double max = (double)raster[raster.Length - 1];
+
+            double a = 255 / (max - min);
+            double b = 255 * min / (min - max);
+
+            int[] replace = new int[256];
+            for(int i = 0; i < min; i++)
+            {
+                replace[i] = 0;
+            }
+            for(int i = (int)min; i < max+1; i++)
+            {
+                replace[i] = (int)(a * i + b);
+                if (replace[i] < 0) replace[i] = 0;
+                if (replace[i] > 255) replace[i] = 255;
+            }
+            for (int i= (int)max + 1; i < 256; i++)
+            {
+                replace[i] = 255;
+            }
+
+            int num = Open.num;
+            int width = Open.TifMapGroup[0].Width;
+            int height = Open.TifMapGroup[0].Height;
+            form.ucProcessLineExt1.Value = 0;
+            for (int z = 0; z < num; z++)
+            {
+
+                Bitmap TiffBuffer = Open.TifMapGroup[z];
+
+                for (int i = 0; i < width; i++)
+                {
+                    for (int j = 0; j < height; j++)
+                    {
+                        Int32 imgArgb = TiffBuffer.GetPixel(i, j).ToArgb();
+                        int value = 0xFF0000 & imgArgb;
+                        value >>= 16;
+                        value = replace[value];
+                        TiffBuffer.SetPixel(i, j, Color.FromArgb(value, value, value));
+                    }
+                }
+                form.ucProcessLineExt1.Value = z + 1;
             }
         }
         #endregion

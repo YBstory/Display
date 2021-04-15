@@ -275,19 +275,16 @@ namespace RadarDisplay
             Open.DisplayTif(this);
         }
 
-        /// <summary>
-        /// 图像去噪
-        /// </summary>
-        private void ImageDenoising()
+        private void GrayEXP()
         {
-            if (!ucBtnExt6.Enabled)
+            if (!ucBtnExt5.Enabled)
             {
                 FrmDialog.ShowDialog(this, "尚未读取文件");
                 return;
             }
-            ImageProcess ImgPro = new ImageProcess();
 
-            ImgPro.MeanFilterStack(this, Open);
+            ImageProcess ImgPro = new ImageProcess();
+            ImgPro.gray_expand(this,Open);
             Open.DisplayTif(this);
         }
 
@@ -421,18 +418,23 @@ namespace RadarDisplay
             this.tvMenu.Nodes.Add(tnControl);
 
 
-            TreeNode tnControl2 = new TreeNode("  图像处理");
-            tnControl2.Nodes.Add("图像增强");
-            tnControl2.Nodes.Add("图像去噪");
-            tnControl2.Nodes.Add("分析地物");
+            TreeNode tnControl2 = new TreeNode("  图像去噪");
+
             tnControl2.Nodes.Add("二维均值滤波");
             tnControl2.Nodes.Add("二维中值滤波");
             tnControl2.Nodes.Add("三维均值滤波");
             tnControl2.Nodes.Add("三维中值滤波");
-            tnControl2.Nodes.Add("转换为灰色影像");
-            //tnControl2.Nodes.Add("保存图片");
+
 
             this.tvMenu.Nodes.Add(tnControl2);
+
+            TreeNode tnControl3 = new TreeNode("  图像增强与分析");
+            tnControl3.Nodes.Add("灰度拉伸");
+            tnControl3.Nodes.Add("直方图均衡化");
+            tnControl3.Nodes.Add("分析地物");
+            tnControl3.Nodes.Add("转换为灰色影像");
+
+            this.tvMenu.Nodes.Add(tnControl3);
 
 
             //按钮区域文件
@@ -504,12 +506,12 @@ namespace RadarDisplay
 
 
                 #region 图像处理按钮
-                case "图像增强":
+                case "直方图均衡化":
                     ImageIntensifier();
                     break;
 
-                case "图像去噪":
-                    ImageDenoising();
+                case "灰度拉伸":
+                    GrayEXP();
                     break;
 
                 case "分析地物":
@@ -755,7 +757,7 @@ namespace RadarDisplay
 
         private void ucBtnExt6_BtnClick(object sender, EventArgs e)
         {
-            ImageDenoising();
+
         }
 
         private void ucBtnExt7_BtnClick(object sender, EventArgs e)
