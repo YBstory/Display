@@ -70,9 +70,32 @@ namespace RadarDisplay
         private int CalculateImg(int[] buffer)
         {
             int length = buffer.Length;
-            Array.Sort(buffer);
-            length = length / 2;
-            return buffer[length];
+            int[] TongJi = new int[256];
+            for(int i = 0; i < 255; i++)
+            {
+                TongJi[i] = 0;
+            }
+
+            for(int i=0;i< length; i++)
+            {
+                TongJi[buffer[i]]++;
+            }
+            int max = 0;
+            int id = -1;
+            for (int i = 0; i < 255; i++)
+            {
+                if (TongJi[i] > max)
+                {
+                    max = TongJi[i];
+                    id = i;
+                }
+            }
+
+            //Array.Sort(buffer);
+            //length = length / 2;
+            //return buffer[length];\
+
+            return id;
         }
 
         /// <summary>
@@ -130,7 +153,7 @@ namespace RadarDisplay
                 for (int j = 0; j < height; j++)
                 {
                     int pixvalue = raster[i * height + j];
-                    if (pixvalue > (mid + 30))
+                    if (pixvalue > (mid + 80))
                     {
                         //获得字节数组
                         string buffer = i.ToString() + "," + j.ToString() + "," + ImgID.ToString() + "\n";
@@ -143,7 +166,7 @@ namespace RadarDisplay
 
 
                     }
-                    else if (pixvalue < (mid - 30))
+                    else if (pixvalue < (mid - 80))
                     {
 
                         //获得字节数组
@@ -214,7 +237,7 @@ namespace RadarDisplay
         }
         #endregion
 
-        #region 图像去噪部分
+        #region 影像去噪部分
 
 
         /// <summary>
@@ -567,29 +590,74 @@ namespace RadarDisplay
         #region 灰度拉伸部分
         public void gray_expand(Form1 form,OpenTiff Open)
         {
-            int[] raster = Raster(Open);
-            Array.Sort(raster);
-            double min = (double)raster[0];
-            double max = (double)raster[raster.Length - 1];
 
-            double a = 255 / (max - min);
-            double b = 255 * min / (min - max);
+            double mina = 60, maxa = 195;         
+            double minb = 30, maxb = 225;
+            int[] raster = Raster(Open);
+            //Array.Sort(raster);
+            //double min = (double)raster[0];
+            //double max = (double)raster[raster.Length - 1];
+
+            //double a = 255 / (max - min);
+            //double b = 255 * min / (min - max);
+
+            double a1 = minb / mina;
+            double b1 = 0;
+
+            double a2 = (maxb - minb) / (maxa - mina);
+            double b2 = (maxa * minb - mina * maxb) / (maxa - mina);
+
+            double a3 = (255 - maxb) / (255 - maxa);
+            double b3 = (255 * maxb - maxa * 255) / (255 - maxa);
+
 
             int[] replace = new int[256];
-            for(int i = 0; i < min; i++)
+
+            //for(int i = 0; i < min; i++)
+            //{
+            //    replace[i] = 0;
+            //}
+            //for(int i = (int)min; i < max+1; i++)
+            //{
+            //    replace[i] = (int)(a * i + b + 0.5);
+            //    if (replace[i] < 0) replace[i] = 0;
+            //    if (replace[i] > 255) replace[i] = 255;
+            //}
+            //for (int i= (int)max + 1; i < 256; i++)
+            //{
+            //    replace[i] = 255;
+            //}
+
+            for(int i=0;i< mina; i++)
             {
-                replace[i] = 0;
-            }
-            for(int i = (int)min; i < max+1; i++)
-            {
-                replace[i] = (int)(a * i + b);
+                replace[i] = (int)(a1 * i + b1 + 0.5);
                 if (replace[i] < 0) replace[i] = 0;
                 if (replace[i] > 255) replace[i] = 255;
             }
-            for (int i= (int)max + 1; i < 256; i++)
+            for (int i = (int)mina; i < maxa; i++)
             {
-                replace[i] = 255;
+                replace[i] = (int)(a2 * i + b2 + 0.5);
+                if (replace[i] < 0) replace[i] = 0;
+                if (replace[i] > 255) replace[i] = 255;
             }
+            for (int i = (int)maxa; i < 256; i++)
+            {
+                replace[i] = (int)(a3 * i + b3 + 0.5);
+                if (replace[i] < 0) replace[i] = 0;
+                if (replace[i] > 255) replace[i] = 255;
+            }
+            FileStream fs = new FileStream("replace.txt", FileMode.Create);
+            for (int i = 0; i < 256; i++)
+            {
+
+                //获得字节数组
+                string buffer = replace[i].ToString() + "\n";
+                byte[] data = System.Text.Encoding.Default.GetBytes(buffer);
+                //开始写入
+                fs.Write(data, 0, data.Length);
+            }
+            fs.Flush();
+            fs.Close();
 
             int num = Open.num;
             int width = Open.TifMapGroup[0].Width;

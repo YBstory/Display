@@ -32,6 +32,7 @@ namespace RadarDisplay
         private int imageSize;
         private int[] raster;
         private Bitmap TifMap;//声明一个图像，存储读入的TIF图像
+        private Bitmap TifMapbuffer;//声明一个图像，存储读入的TIF图像
 
 
         public Bitmap[] TifMapGroup;//声明一个图像，存储读入的TIF图像
@@ -102,6 +103,7 @@ namespace RadarDisplay
 
 
                 TifMap = new Bitmap(width, height);
+                TifMapbuffer = new Bitmap(width, height);
 
 
                 if (!image.ReadRGBAImage(width, height, raster))
@@ -114,6 +116,7 @@ namespace RadarDisplay
                     {
 
                         TifMap.SetPixel(i, j, GetPixColor(i, j, raster, width, height));
+                        TifMapbuffer.SetPixel(i, j, GetPixColor(i, j, raster, width, height));
                     }
                 }
             }
@@ -125,13 +128,13 @@ namespace RadarDisplay
         #region 读取全部tif影像
         public void ReadAllTif(Form1 form)
         {
-            
+           
             //IMin = 10000;
             //IMax = -1;
             //JMin = 10000;
             //JMax = -1;
             TifMapGroup = new Bitmap[num];
-            
+            bufferMapGroup=new Bitmap[num];
             for (int i = 0; i < num; i++)
             {
 
@@ -139,6 +142,7 @@ namespace RadarDisplay
                 ReadTif();
 
                 TifMapGroup[i] = TifMap;
+                bufferMapGroup[i] = TifMapbuffer;
                 firstImg = true;
                 int a = form.ucProcessLineExt1.Value;
                 form.SetProcessBarValue(i + 1);
@@ -260,7 +264,7 @@ namespace RadarDisplay
         //计算原始坐标
         public Point CalLocation(Form1 form, Point e)
         {
-            int originalWidth = form.pictureBox1.Image.Width;
+            int originalWidth = form.pictureBox1.Image.Width;//图片分辨率
             int originalHeight = form.pictureBox1.Image.Height;
 
             PropertyInfo rectangleProperty = form.pictureBox1.GetType().GetProperty("ImageRectangle", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -269,7 +273,8 @@ namespace RadarDisplay
             int currentWidth = rectangle.Width;
             int currentHeight = rectangle.Height;
 
-            double rate = (double)currentHeight / (double)originalHeight;
+            double rate1 = (double)currentWidth / (double)originalWidth;
+            double rate2 = (double)currentHeight / (double)originalHeight;
 
             int black_left_width = (currentWidth == form.pictureBox1.Width) ? 0 : (form.pictureBox1.Width - currentWidth) / 2;
             int black_top_height = (currentHeight == form.pictureBox1.Height) ? 0 : (form.pictureBox1.Height - currentHeight) / 2;
@@ -277,8 +282,8 @@ namespace RadarDisplay
             int zoom_x = e.X - black_left_width;
             int zoom_y = e.Y - black_top_height;
 
-            double original_x = (double)zoom_x / rate;
-            double original_y = (double)zoom_y / rate;
+            double original_x = (double)zoom_x / rate1;
+            double original_y = (double)zoom_y / rate2;
 
             if (original_x < 0 || original_y < 0 || original_x >= TifMapGroup[0].Width || original_y >= TifMapGroup[0].Height)
             {
@@ -356,7 +361,7 @@ namespace RadarDisplay
                     for (int j = 0; j < heightLon; j++)
                     {
 
-                        LonTiff.SetPixel(i, j, TifMapGroup[j].GetPixel(((int)Math.Round(x)), ((int)Math.Round(y))));
+                        LonTiff.SetPixel(i, j, TifMapGroup[j].GetPixel(((int)Math.Round(x+0.5)), ((int)Math.Round(y+0.5))));
                     }
                     x = x + 1;
                     y = y + k;
@@ -364,11 +369,11 @@ namespace RadarDisplay
             }
             else
             {
-                for (int i = 0; i < widthLon; i++)
+                for (int i = 0; i <= widthLon; i++)
                 {
                     for (int j = 0; j < heightLon; j++)
                     {
-                        LonTiff.SetPixel(i, j, TifMapGroup[j].GetPixel((int)Math.Round(x), (int)Math.Round(y)));
+                        LonTiff.SetPixel(i, j, TifMapGroup[j].GetPixel((int)Math.Round(x+0.5), (int)Math.Round(y+0.5)));
                     }
                     y = y + 1;
                     x = x + k;
@@ -377,7 +382,7 @@ namespace RadarDisplay
 
             LonTiffBuff = (Bitmap)DeepCopyBitmap(LonTiff);
             form.pictureBox2.Image = LonTiff;
-
+            
         }
         #endregion
 
@@ -478,7 +483,7 @@ namespace RadarDisplay
 
         #endregion
 
-        #region 保存图片堆
+        #region 保存影像堆
         public void SaveStack(string SavePath)
         {
             System.Drawing.Imaging.ImageFormat imgformat = System.Drawing.Imaging.ImageFormat.Tiff;
@@ -489,6 +494,61 @@ namespace RadarDisplay
                 string path = SavePath + "\\Save" + buffer + ".tif";
                 TifMapGroup[i].Save(path, imgformat);
             }
+        }
+        #endregion
+
+
+        #region 批量纵切
+        public void CutLon(Form1 Form,string SavePath)
+        {
+            width = TifMapGroup[0].Width;
+            height = TifMapGroup[0].Height;
+            System.Drawing.Imaging.ImageFormat imgformat = System.Drawing.Imaging.ImageFormat.Tiff;
+            Bitmap[] TifMap = new Bitmap[width];
+            Form.ucProcessLineExt1.Value = 0;
+            Form.ucProcessLineExt1.MaxValue = width-1;
+            for (int i=0;i< width; i++)
+            {
+                Bitmap pic= new Bitmap(height,num);
+                for(int j = 0; j < num; j++)
+                {
+                    for(int k = 0; k < height; k++)
+                    {
+                        pic.SetPixel(k,j, TifMapGroup[j].GetPixel(i, k));
+                    }
+                }
+                TifMap[i] = pic;
+                string buffer = i.ToString();
+                string path = SavePath + "\\Save" + buffer + ".tif";
+                pic.Save(path, imgformat);
+                Form.ucProcessLineExt1.Value++;
+            }
+
+    }
+        #endregion
+
+        #region 还原最初
+
+        public void rerurnO(Form1 Form)
+        {
+            width = bufferMapGroup[0].Width;
+            height = bufferMapGroup[0].Height;
+
+            Form.ucProcessLineExt1.Value = 0;
+            for(int i = 0; i < num; i++)
+            {
+                TifMap = new Bitmap(width, height);
+                for(int j = 0; j < width; j++)
+                {
+                    for(int k = 0; k < height; k++)
+                    {
+                        TifMap.SetPixel(j, k, bufferMapGroup[i].GetPixel(j, k));
+                    }
+                }
+                TifMapGroup[i] = TifMap;
+                Form.ucProcessLineExt1.Value = i + 1;
+            }
+
         }
         #endregion
     }

@@ -160,7 +160,7 @@ namespace RadarDisplay
         }
 
         /// <summary>
-        /// 保存图片堆
+        /// 保存影像堆
         /// </summary>
         private void SaveTiffStack()
         {
@@ -180,6 +180,20 @@ namespace RadarDisplay
 
             Open.SaveStack(RootPath);
             FrmDialog.ShowDialog(this, "图片保存成功！");
+        }
+
+        /// <summary>
+        /// 还原影像
+        /// </summary>
+        private void return2o()
+        {
+            if (!ucBtnExt3.Enabled)
+            {
+                FrmDialog.ShowDialog(this, "尚未读取文件");
+                return;
+            }
+            Open.rerurnO(this);
+            Open.DisplayTif(this);
         }
 
         /// <summary>
@@ -220,7 +234,7 @@ namespace RadarDisplay
 
             if (Open.ReadImg == false)
             {
-                FrmDialog.ShowDialog(this, "图片正在读取，请稍后进行该操作。");
+                FrmDialog.ShowDialog(this, "影像正在读取，请稍后进行该操作。");
                 return;
             }
             this.ucProcessLineExt1.Value = 0;
@@ -248,7 +262,7 @@ namespace RadarDisplay
 
             if (Open.ReadImg == false)
             {
-                FrmDialog.ShowDialog(this, "图片正在读取，请稍后进行该操作。");
+                FrmDialog.ShowDialog(this, "影像正在读取，请稍后进行该操作。");
                 return;
             }
             this.ucBtnExt4.Enabled = false;
@@ -258,9 +272,33 @@ namespace RadarDisplay
             FrmDialog.ShowDialog(this, "点击确定两点，确定绘制纵切面的区域。");
             
         }
+        /// <summary>
+        /// 纵切堆保存
+        /// </summary>
+        private void CutSave()
+        {
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
+            dialog.Description = "保存位置";
+
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if (string.IsNullOrEmpty(dialog.SelectedPath))
+                {
+                    MessageBox.Show(this, "文件夹路径不能为空", "提示");
+                    return;
+                }
+            }
+
+            string RootPath = dialog.SelectedPath;
+
+            Open.CutLon(this,RootPath);
+            FrmDialog.ShowDialog(this, "图片保存成功！");
+            ucProcessLineExt1.Value = 0;
+            ucProcessLineExt1.MaxValue = Open.num;
+        }
 
         /// <summary>
-        /// 图像增强
+        /// 影像增强
         /// </summary>
         private void ImageIntensifier()
         {
@@ -353,7 +391,7 @@ namespace RadarDisplay
         }
 
         /// <summary>
-        /// 分析地物
+        /// 地物提取
         /// </summary>
         private void Analysis()
         {
@@ -366,7 +404,7 @@ namespace RadarDisplay
             ImageProcess ImgPro = new ImageProcess();
             if (Open.ReadImg == false)
             {
-                FrmDialog.ShowDialog(this, "图片正在读取，请稍后进行该操作。");
+                FrmDialog.ShowDialog(this, "影像正在读取，请稍后进行该操作。");
                 return;
             }
             //button6.Enabled = true;
@@ -383,7 +421,7 @@ namespace RadarDisplay
             ImageProcess ImgPro = new ImageProcess();
             if (Open.ReadImg == false)
             {
-                FrmDialog.ShowDialog(this, "图片正在读取，请稍后进行该操作。");
+                FrmDialog.ShowDialog(this, "影像正在读取，请稍后进行该操作。");
                 return;
             }
             //button6.Enabled = true;
@@ -406,7 +444,8 @@ namespace RadarDisplay
             TreeNode tnForm = new TreeNode("  文件");
             tnForm.Nodes.Add("打开文件");
             tnForm.Nodes.Add("打开文件夹");
-            tnForm.Nodes.Add("保存图片堆");
+            tnForm.Nodes.Add("保存影像堆");
+            tnForm.Nodes.Add("还原初始影像");
 
             this.tvMenu.Nodes.Add(tnForm);
 
@@ -414,11 +453,12 @@ namespace RadarDisplay
             tnControl.Nodes.Add("绘制矩形");
             tnControl.Nodes.Add("剪裁");
             tnControl.Nodes.Add("纵切面");
+            tnControl.Nodes.Add("纵切堆保存");
 
             this.tvMenu.Nodes.Add(tnControl);
 
 
-            TreeNode tnControl2 = new TreeNode("  图像去噪");
+            TreeNode tnControl2 = new TreeNode("  影像去噪");
 
             tnControl2.Nodes.Add("二维均值滤波");
             tnControl2.Nodes.Add("二维中值滤波");
@@ -428,11 +468,12 @@ namespace RadarDisplay
 
             this.tvMenu.Nodes.Add(tnControl2);
 
-            TreeNode tnControl3 = new TreeNode("  图像增强与分析");
+            TreeNode tnControl3 = new TreeNode("  影像增强与分析");
             tnControl3.Nodes.Add("灰度拉伸");
             tnControl3.Nodes.Add("直方图均衡化");
-            tnControl3.Nodes.Add("分析地物");
-            tnControl3.Nodes.Add("转换为灰色影像");
+            tnControl3.Nodes.Add("地物提取");
+            tnControl3.Nodes.Add("生成三维地物");
+            tnControl3.Nodes.Add("全色影像转换");
 
             this.tvMenu.Nodes.Add(tnControl3);
 
@@ -445,10 +486,10 @@ namespace RadarDisplay
             ucBtnExt4.BtnText = "剪裁";
             ucBtnExt9.BtnText = "纵切面";
 
-            ucBtnExt5.BtnText = "图像增强";
-            ucBtnExt6.BtnText = "图像去噪";
-            ucBtnExt7.BtnText = "分析地物";
-            ucBtnExt8.BtnText = "保存图片";
+            ucBtnExt5.BtnText = "影像增强";
+            ucBtnExt6.BtnText = "影像去噪";
+            ucBtnExt7.BtnText = "地物提取";
+            ucBtnExt8.BtnText = "保存影像";
 
         }
 
@@ -484,8 +525,12 @@ namespace RadarDisplay
                     OpenFolder();
                     break;
 
-                case "保存图片堆":
+                case "保存影像堆":
                     SaveTiffStack();
+                    break;
+
+                case "还原初始影像":
+                    return2o();
                     break;
 
                 #endregion
@@ -502,7 +547,12 @@ namespace RadarDisplay
                 case "纵切面":
                     LongitudinalSection();
                     break;
+
+                case "纵切堆保存":
+                    CutSave();
+                    break;
                 #endregion
+
 
 
                 #region 图像处理按钮
@@ -534,7 +584,7 @@ namespace RadarDisplay
                     MedianFilter_3D();
                     break;
 
-                case "转换为灰色影像":
+                case "全色影像转换":
                     Convert2G();
                     break;
                     #endregion
@@ -706,7 +756,7 @@ namespace RadarDisplay
                     {
                         try
                         {
-                            this.pictureBox1.Image.Save(fileName, imgformat);
+                            this.pictureBox2.Image.Save(fileName, imgformat);
                             FrmDialog.ShowDialog(this,"图片已经成功保存!");
                         }
                         catch

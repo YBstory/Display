@@ -153,7 +153,7 @@
             this.groupBox3.Size = new System.Drawing.Size(261, 279);
             this.groupBox3.TabIndex = 4;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "图像处理";
+            this.groupBox3.Text = "影像处理";
             // 
             // ucBtnExt7
             // 
@@ -499,7 +499,7 @@
             this.Controls.Add(this.tvMenu);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
-            this.Text = "探地雷达影像显示";
+            this.Text = "探地雷达影像可视化处理";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
