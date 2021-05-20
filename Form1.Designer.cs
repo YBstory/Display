@@ -48,6 +48,7 @@
             this.ucBtnExt8 = new HZH_Controls.Controls.UCBtnExt();
             this.ucTrackBar1 = new HZH_Controls.Controls.UCTrackBar();
             this.ucProcessLineExt1 = new HZH_Controls.Controls.UCProcessLineExt();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -113,6 +114,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.AutoScroll = true;
+            this.splitContainer1.Panel2.Controls.Add(this.label1);
             this.splitContainer1.Panel2.Controls.Add(this.ucProcessLineExt1);
             this.splitContainer1.Size = new System.Drawing.Size(1682, 983);
             this.splitContainer1.SplitterDistance = 886;
@@ -490,6 +492,17 @@
             this.ucProcessLineExt1.ValueBGColor = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(231)))), ((int)(((byte)(237)))));
             this.ucProcessLineExt1.ValueColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(77)))), ((int)(((byte)(59)))));
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label1.ForeColor = System.Drawing.SystemColors.ControlDark;
+            this.label1.Location = new System.Drawing.Point(1517, 48);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(134, 25);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Matlab待加载";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -505,6 +518,7 @@
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
@@ -540,6 +554,7 @@
         public System.Windows.Forms.PictureBox pictureBox1;
         public HZH_Controls.Controls.UCBtnExt ucBtnExt3;
         public HZH_Controls.Controls.UCBtnExt ucBtnExt4;
+        private System.Windows.Forms.Label label1;
     }
 }
 

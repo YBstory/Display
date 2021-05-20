@@ -12,6 +12,7 @@ using System.Threading;
 using BitMiracle.LibTiff.Classic;
 using HZH_Controls.Forms;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace RadarDisplay
 {
@@ -23,8 +24,30 @@ namespace RadarDisplay
         {
             InitializeComponent();
         }
+
+        delegate void SetTextCallback(string text);
+
         OpenTiff Open = new OpenTiff();
         int i = 0;
+
+        #region //Windows API
+        [DllImport("user32.dll")]
+        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);//
+        [DllImport("user32.dll")]
+        public static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern int MoveWindow(IntPtr hWnd, int x, int y, int nWidth, int nHeight, bool BRePaint);
+        const int GWL_STYLE = -16;
+        const int WS_CAPTION = 0x00C00000;
+        const int WS_THICKFRAME = 0x00040000;
+        const int WS_SYSMENU = 0X00080000;
+        [DllImport("user32")]
+        private static extern int GetWindowLong(System.IntPtr hwnd, int nIndex);
+        [DllImport("user32")]
+        #endregion
+
+        private static extern int SetWindowLong(System.IntPtr hwnd, int index, int newLong);
+
 
         /// <summary>
         /// 子线程控制进度条
@@ -46,8 +69,26 @@ namespace RadarDisplay
                 this.ucProcessLineExt1.Value = value;
             }
         }
-
-
+       
+        /// <summary>
+        /// 子线程控制文字
+        /// </summary>
+        /// <param name="test"></param>
+        public void SetLabelValue(string str)
+        {
+            // InvokeRequired required compares the thread ID of the
+            // calling thread to the thread ID of the creating thread.
+            // If these threads are different, it returns true.
+            if (this.label1.InvokeRequired)
+            {
+                SetTextCallback d = new SetTextCallback(SetLabelValue);
+                this.Invoke(d, new object[] { str });
+            }
+            else
+            {
+                this.label1.Text = str;
+            }
+        }
         #region 所有按钮操作函数
         /// <summary>
         /// 读取图片，子线程函数
@@ -59,9 +100,18 @@ namespace RadarDisplay
             Open.ReadImg = true;
         }
 
-       /// <summary>
-       /// 打开文件
-       /// </summary>
+        ThreeD.Class1 a;
+        private void ThreadThreeD()
+        {
+            SetLabelValue("Matlab准备中...");
+            a = new ThreeD.Class1();
+            //a.ThreeD();
+            SetLabelValue("Matlab准备完成");
+        }
+
+        /// <summary>
+        /// 打开文件
+        /// </summary>
         private  void OpenFile()
         {
             this.ucTrackBar1.Value = 1;
@@ -100,6 +150,8 @@ namespace RadarDisplay
             Thread thread = new Thread(new ThreadStart(newThread));
             thread.IsBackground = true;
             thread.Start();
+
+
         }
 
         /// <summary>
@@ -327,6 +379,22 @@ namespace RadarDisplay
         }
 
         /// <summary>
+        /// 明暗归一
+        /// </summary>
+        private void D2L()
+        {
+            if (!ucBtnExt6.Enabled)
+            {
+                FrmDialog.ShowDialog(this, "尚未读取文件");
+                return;
+            }
+            ImageProcess ImgPro = new ImageProcess();
+
+            ImgPro.Dark2Light(this,Open);
+            Open.DisplayTif(this);
+        }
+
+        /// <summary>
         /// 二维均值滤波
         /// </summary>
         private void MeanFilter_2D()
@@ -407,6 +475,10 @@ namespace RadarDisplay
                 FrmDialog.ShowDialog(this, "影像正在读取，请稍后进行该操作。");
                 return;
             }
+
+
+
+
             //button6.Enabled = true;
             ImgPro.GetImg(this, Open);
             Open.DisplayTif(this);
@@ -438,6 +510,10 @@ namespace RadarDisplay
         /// <param name="e"></param>
         private void Form1_Load(object sender, EventArgs e)
         {
+            //多线程准备matlab
+            Thread thread2 = new Thread(new ThreadStart(ThreadThreeD));
+            thread2.IsBackground = true;
+            thread2.Start();
             //skinEngine1.SkinFile = "C:\\Users\\zyb71\\Desktop\\WinFormSkin\\WinFormSkin\\bin\\Debug\\Skins\\SportsBlue.ssk";
 
             //左侧树文字
@@ -460,6 +536,7 @@ namespace RadarDisplay
 
             TreeNode tnControl2 = new TreeNode("  影像去噪");
 
+            tnControl2.Nodes.Add("明暗归一");
             tnControl2.Nodes.Add("二维均值滤波");
             tnControl2.Nodes.Add("二维中值滤波");
             tnControl2.Nodes.Add("三维均值滤波");
@@ -564,8 +641,12 @@ namespace RadarDisplay
                     GrayEXP();
                     break;
 
-                case "分析地物":
+                case "地物提取":
                     Analysis();
+                    break;
+
+                case "明暗归一":
+                    D2L();
                     break;
 
                 case "二维均值滤波":
@@ -586,6 +667,18 @@ namespace RadarDisplay
 
                 case "全色影像转换":
                     Convert2G();
+                    break;
+
+                case "生成三维地物":
+                    
+                    ControlHelper.ThreadRunExt(this, () =>
+                    {
+                        a.ThreeD();
+                        //ControlHelper.ThreadInvokerControl(this, () =>
+                        //{
+                        //    //FrmTips.ShowTipsSuccess(this, "FrmWaiting测试");
+                        //});
+                    }, null, this);
                     break;
                     #endregion
             }

@@ -28,3 +28,6 @@ C:\Users\zyb71\Desktop\RadarCode\RadarDisplay\obj\x64\Debug\RadarDisplay.csproj.
 C:\Users\zyb71\Desktop\RadarCode\RadarDisplay\obj\x64\Debug\RadarDisplay.csproj.CopyComplete
 C:\Users\zyb71\Desktop\RadarCode\RadarDisplay\obj\x64\Debug\RadarDisplay.exe
 C:\Users\zyb71\Desktop\RadarCode\RadarDisplay\obj\x64\Debug\RadarDisplay.pdb
+C:\Users\zyb71\Desktop\RadarCode\RadarDisplay\bin\x64\Debug\ThreeD.dll
+C:\Users\zyb71\Desktop\RadarCode\RadarDisplay\obj\x64\Debug\Interop.MLApp.dll
+C:\Users\zyb71\Desktop\RadarCode\RadarDisplay\obj\x64\Debug\RadarDisplay.csproj.ResolveComReference.cache

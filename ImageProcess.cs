@@ -153,7 +153,7 @@ namespace RadarDisplay
                 for (int j = 0; j < height; j++)
                 {
                     int pixvalue = raster[i * height + j];
-                    if (pixvalue > (mid + 80))
+                    if (pixvalue > (mid + 60))
                     {
                         //获得字节数组
                         string buffer = i.ToString() + "," + j.ToString() + "," + ImgID.ToString() + "\n";
@@ -162,11 +162,12 @@ namespace RadarDisplay
                         fs1.Write(data, 0, data.Length);
 
                         image.SetPixel(i, j, Color.FromArgb(255, 255, 0));
+                        //image.SetPixel(i, j, Color.FromArgb(255,140,0));
 
 
 
                     }
-                    else if (pixvalue < (mid - 80))
+                    else if (pixvalue < (mid - 50))
                     {
 
                         //获得字节数组
@@ -177,6 +178,7 @@ namespace RadarDisplay
 
 
                         image.SetPixel(i, j, Color.FromArgb(0, 255, 255));
+                        //image.SetPixel(i, j, Color.FromArgb(204, 255, 204));
                     }
                     //if (pixvalue < 10)
                     //{
@@ -206,16 +208,16 @@ namespace RadarDisplay
                 ImgID++;
             }
 
-            Open.TifMapGroup.CopyTo(Open.bufferMapGroup, 0);
+            //Open.TifMapGroup.CopyTo(Open.bufferMapGroup, 0);
 
             int[] raster = Raster(Open);
             int mid = CalculateImg(raster);
 
-            int width = Open.bufferMapGroup[0].Width;
-            int height = Open.bufferMapGroup[0].Height;
+            int width = Open.TifMapGroup[0].Width;
+            int height = Open.TifMapGroup[0].Height;
 
-            FileStream fs1 = new FileStream("k1.txt", FileMode.Create);
-            FileStream fs2 = new FileStream("k2.txt", FileMode.Create);
+            FileStream fs1 = new FileStream("C:\\Users\\zyb71\\Desktop\\RadarCode\\RadarDisplay\\bin\\Debug\\k1.txt", FileMode.Create);
+            FileStream fs2 = new FileStream("C:\\Users\\zyb71\\Desktop\\RadarCode\\RadarDisplay\\bin\\Debug\\k2.txt", FileMode.Create);
 
 
 
@@ -575,6 +577,7 @@ namespace RadarDisplay
 
         public void histogram(OpenTiff Open)
         {
+
             gray_equal = GrayEqual(Open.TifMapGroup[0]);
 
             int num = Open.num;
@@ -719,5 +722,44 @@ namespace RadarDisplay
             }
         }
         #endregion
+
+
+        private void Convert(Bitmap image)
+        {
+            int width = image.Width;
+            int height = image.Height;
+
+            //统计每个灰度下的像素个数
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    Int32 imgArgb = image.GetPixel(i, j).ToArgb();
+                    int value = 0xFF0000 & imgArgb;
+                    value >>= 16;
+
+                    if (value < 128) value = 255 - value;
+                    image.SetPixel(i, j, Color.FromArgb(value, value, value));
+                }
+            }
+        }
+
+        public void Dark2Light(Form1 Form, OpenTiff Open)
+        {
+            Form.ucProcessLineExt1.Value = 0;
+
+            int num = Open.num;
+
+            for (int i = 0; i < num; i++)
+            {
+                
+                Convert(Open.TifMapGroup[i]);
+                Form.ucProcessLineExt1.Value = i + 1;
+            }
+
+        }
+
+
+
     }
 }

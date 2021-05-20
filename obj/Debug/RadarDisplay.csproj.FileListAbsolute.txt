@@ -28,3 +28,6 @@ C:\Users\zyb71\Desktop\RadarCode\RadarDisplay\bin\Debug\IrisSkin4.dll
 C:\Users\zyb71\Desktop\RadarCode\RadarDisplay\bin\Debug\SunnyUI.dll
 C:\Users\zyb71\Desktop\RadarCode\RadarDisplay\bin\Debug\SunnyUI.Common.dll
 C:\Users\zyb71\Desktop\RadarCode\RadarDisplay\bin\Debug\BitMiracle.LibTiff.NET.dll
+C:\Users\zyb71\Desktop\RadarCode\RadarDisplay\bin\Debug\ThreeD.dll
+C:\Users\zyb71\Desktop\RadarCode\RadarDisplay\obj\Debug\Interop.MLApp.dll
+C:\Users\zyb71\Desktop\RadarCode\RadarDisplay\obj\Debug\RadarDisplay.csproj.ResolveComReference.cache
